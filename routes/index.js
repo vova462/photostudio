@@ -1,9 +1,24 @@
-const express = require('express');
-const router = express.Router();
+'use strict';
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+var fs = require('fs');
+var path = require('path');
 
-module.exports = router;
+module.exports = function (app) {
+    var initPath = __dirname;
+    var init = fs.readdirSync(initPath);
+
+    init.forEach(function (js) {
+        if (js === 'index.js') {
+            return;
+        }
+
+        var router = require(path.join(initPath, js));
+        var name = js.replace('.js', '');
+
+        if (name === 'home') {
+          name = '';
+        }
+
+        app.use('/' + name, router);
+    });
+};

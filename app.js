@@ -6,9 +6,20 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 const index = require('./routes/index');
-const users = require('./routes/users');
+const photographers = require('./routes/photographer');
+
+const router = require('./routes/');
 
 const app = express();
+
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/photostudio');
+
+mongoose.connection.once('open', () => {
+  console.info('Connected to DB.');
+  mongoose.Promise = require('bluebird');
+})
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,8 +34,7 @@ app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/users', users);
+router(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
